@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  php-fpm:
+    container_name: php-fpm
+    build:
+      context: ./../
+      dockerfile: ./docker/php-fpm/Dockerfile
+      args:
+        - PUID=${PUID}
+        - PGID=${PGID}
+    volumes:
+      - ./../:/var/www/
+
+  nginx-backend:
+    container_name: nginx-backend
+    build:
+      context: nginx-backend
+    ports:
+      - ${NGINX_HOST_HTTP_PORT_BACKEND}:80
+    volumes:
+      - ..:/var/www:rw
+    depends_on:
+      - php-fpm
+
+  nginx-frontend:
+    container_name: nginx-frontend
+    build:
+      context: nginx-frontend
+    ports:
+      - ${NGINX_HOST_HTTP_PORT_FRONTEND}:80
+    volumes:
+      - ..:/var/www:rw
+    depends_on:
+      - php-fpm
+
+  mariadb:
+    container_name: mariadb
+    image: mariadb:latest
+    ports:
+      - ${MARIADB_PORT}:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MARIADB_DB}
+      MYSQL_USER: ${MARIADB_USER}
+      MYSQL_PASSWORD: ${MARIADB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql:rw
+
+volumes:
+  db_data:
