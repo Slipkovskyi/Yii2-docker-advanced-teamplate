@@ -5,7 +5,7 @@ RUN apk add --no-cache curl git build-base zlib-dev oniguruma-dev autoconf bash
 RUN apk add --update linux-headers
 
 # Install PHP extensions
-RUN apk add --no-cache libpq-dev && docker-php-ext-install pdo_pgsql
+RUN apk add --no-cache libpq-dev && docker-php-ext-install pdo_pgsql pdo_mysql
 
 # Configure non-root user.
 ARG PUID=1000
